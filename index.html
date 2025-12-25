@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FromFutureTest | Network Diagnostics</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Orbitron', sans-serif;
+}
+
+body {
+    background: radial-gradient(circle at center, #020617, #000);
+    color: #e5e7eb;
+    overflow: hidden;
+}
+
+/* ===== BOOT ===== */
+#boot {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.boot-text {
+    color: #38bdf8;
+    font-size: 20px;
+    letter-spacing: 2px;
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.4; }
+}
+
+/* ===== APP ===== */
+#app {
+    display: none;
+}
+
+header {
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #0f172a;
+}
+
+header h1 {
+    color: #38bdf8;
+}
+
+/* ===== HUD SIDE PANELS ===== */
+.hud-left, .hud-right {
+    position: fixed;
+    top: 80px;
+    width: 120px;
+    height: calc(100% - 120px);
+    border: 1px solid rgba(56,189,248,0.2);
+}
+
+.hud-left {
+    left: 20px;
+    border-right: none;
+}
+
+.hud-right {
+    right: 20px;
+    border-left: none;
+}
+
+.hud-line {
+    height: 2px;
+    background: rgba(56,189,248,0.4);
+    margin: 30px 10px;
+}
+
+.hud-dot {
+    width: 6px;
+    height: 6px;
+    background: #38bdf8;
+    border-radius: 50%;
+    margin: 10px auto;
+}
+
+/* ===== MAIN ===== */
+.main {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.subtitle {
+    color: #94a3b8;
+    margin-top: 10px;
+}
+
+/* ===== SPEED RING (NO ROTATION) ===== */
+.ring {
+    margin: 60px auto;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    border: 3px solid rgba(56,189,248,0.35);
+    box-shadow: 0 0 50px rgba(56,189,248,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ring::before {
+    content: "";
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    border: 1px dashed rgba(56,189,248,0.25);
+}
+
+.speed {
+    font-size: 64px;
+}
+
+.unit {
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+/* ===== BUTTON ===== */
+button {
+    margin-top: 40px;
+    padding: 14px 50px;
+    border-radius: 30px;
+    border: none;
+    background: linear-gradient(135deg,#38bdf8,#0ea5e9);
+    color: #020617;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 0 30px rgba(56,189,248,0.8);
+}
+
+/* ===== INFO ===== */
+.info {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    color: #94a3b8;
+}
+
+/* ===== SCANLINES ===== */
+.scanlines {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.03),
+        rgba(255,255,255,0.03) 1px,
+        transparent 2px,
+        transparent 4px
+    );
+    pointer-events: none;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<!-- BOOT -->
+<div id="boot">
+    <div class="boot-text">INITIALIZING FUTURE NETWORK...</div>
+</div>
+
+<!-- HUD PANELS -->
+<div class="hud-left">
+    <div class="hud-line"></div>
+    <div class="hud-dot"></div>
+    <div class="hud-line"></div>
+</div>
+
+<div class="hud-right">
+    <div class="hud-line"></div>
+    <div class="hud-dot"></div>
+    <div class="hud-line"></div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<header>
+    <h1>FromFutureTest</h1>
+    <div id="device">Detecting device...</div>
+</header>
+
+<div class="main">
+    <h2>Future Internet Speed Analysis</h2>
+    <p class="subtitle">Next-gen cyber network diagnostics</p>
+
+    <div class="ring">
+        <div>
+            <div class="speed" id="speed">0</div>
+            <div class="unit">Mbps</div>
+        </div>
+    </div>
+
+    <button onclick="startTest()">INITIATE SCAN</button>
+
+    <div class="info">
+        <div>📍 City: <span id="city">Detecting…</span></div>
+        <div>🌐 ISP: <span id="isp">Detecting…</span></div>
+        <div>📶 Signal: <span id="signal">—</span></div>
+    </div>
+</div>
+
+<footer>
+© 2025 FromFutureTest • Network From Tomorrow
+</footer>
+</div>
+
+<div class="scanlines"></div>
+
+<script>
+// BOOT
+setTimeout(() => {
+    boot.style.display = "none";
+    app.style.display = "block";
+}, 2300);
+
+// DEVICE
+let ua = navigator.userAgent;
+let device = "Desktop";
+if (/android/i.test(ua)) device = "Android Phone";
+else if (/iphone|ipad/i.test(ua)) device = "iOS Device";
+else if (/windows/i.test(ua)) device = "Windows PC";
+else if (/mac/i.test(ua)) device = "Mac Device";
+document.getElementById("device").innerText = device;
+
+// LOCATION
+fetch("https://ipapi.co/json/")
+.then(r => r.json())
+.then(d => {
+    city.innerText = d.city;
+    isp.innerText = d.org;
+});
+
+// SPEED ANIMATION
+function startTest() {
+    let speed = 0;
+    let finalSpeed = 96;
+    signal.innerText = "Scanning…";
+
+    let interval = setInterval(() => {
+        speed += Math.random() * 4;
+        document.getElementById("speed").innerText = speed.toFixed(1);
+
+        if (speed >= finalSpeed) {
+            clearInterval(interval);
+            document.getElementById("speed").innerText = finalSpeed;
+            signal.innerText = "Excellent";
+        }
+    }, 120);
+}
+</script>
+
+</body>
+</html>
